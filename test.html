@@ -1,0 +1,208 @@
+<!doctype html> <html> 
+<head>
+ <title>Socket.IO chat</title> 
+ <style> 
+    * { 
+        margin: 0; 
+        padding: 0; 
+        box-sizing: 
+        border-box; 
+    } 
+    body { 
+        font: 13px Helvetica, Arial; 
+    } 
+    form { 
+        background: #000; 
+        padding: 3px; 
+        position: fixed; 
+        bottom: 0; 
+        width: 100%; 
+    } 
+    form input { 
+        border: 0; 
+        padding: 10px; 
+        width: 90%; 
+        margin-right: .5%; 
+    } 
+    form button { 
+        width: 9%; 
+        background: rgb(130, 224, 255); 
+        border: none; 
+        padding: 10px; 
+    } 
+    #messages { 
+        list-style-type: none; 
+        margin: 0; 
+        padding: 0; 
+    } 
+    #messages li { 
+        padding: 5px 10px; 
+    } 
+    #messages li:nth-child(odd) { 
+        background: #eee; 
+    } 
+</style> 
+</head> 
+<body> 
+    <ul id="messages"></ul> 
+    <form action=""> 
+        <input id="m" autocomplete="off" />
+        <button>Send</button> 
+    </form>
+</body>
+<script src="js/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
+<script> 
+$(function () {
+    //socket.io
+    var socket = io('http://127.0.0.1:3001', {
+        withCredentials: false,
+    });
+    socket.on('command', function(msg){
+        $('#messages').append($('<li>').text(msg)); 
+    });
+
+
+    //録音と送信
+    let audio_sample_rate = 16000;
+    let scriptProcessor = null;
+    let audioContext = null;
+    let audioData = [];
+    let bufferSize = 1024;
+
+    let sendAudio = function () {
+        var file = exportWAV(audioData);
+        upload(file);
+        
+        function upload(file){
+            var fileReader = new FileReader();
+            var send_file = file;
+            var data = {};
+            
+            fileReader.readAsBinaryString(send_file);
+            fileReader.onload = function(event) {
+                data.file = event.target.result;
+                data.name = "uploadFile";
+    
+                socket.emit('upload',data);
+            }
+        }
+    }
+
+    let exportWAV = function (audioData) {
+        let encodeWAV = function (samples, sampleRate) {
+            let buffer = new ArrayBuffer(44 + samples.length * 2);
+            let view = new DataView(buffer);
+
+            let writeString = function (view, offset, string) {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+
+            let floatTo16BitPCM = function (output, offset, input) {
+                for (let i = 0; i < input.length; i++ , offset += 2) {
+                    let s = Math.max(-1, Math.min(1, input[i]));
+                    output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+                }
+            };
+
+            writeString(view, 0, 'RIFF');  // RIFFヘッダ
+            view.setUint32(4, 32 + samples.length * 2, true); // これ以降のファイルサイズ
+            writeString(view, 8, 'WAVE'); // WAVEヘッダ
+            writeString(view, 12, 'fmt '); // fmtチャンク
+            view.setUint32(16, 16, true); // fmtチャンクのバイト数
+            view.setUint16(20, 1, true); // フォーマットID
+            view.setUint16(22, 1, true); // チャンネル数
+            view.setUint32(24, sampleRate, true); // サンプリングレート
+            view.setUint32(28, sampleRate * 2, true); // データ速度
+            view.setUint16(32, 2, true); // ブロックサイズ
+            view.setUint16(34, 16, true); // サンプルあたりのビット数
+            writeString(view, 36, 'data'); // dataチャンク
+            view.setUint32(40, samples.length * 2, true); // 波形データのバイト数
+            floatTo16BitPCM(view, 44, samples); // 波形データ
+
+            return view;
+        };
+
+        let mergeBuffers = function (audioData) {
+            let sampleLength = 0;
+            for (let i = 0; i < audioData.length; i++) {
+                sampleLength += audioData[i].length;
+            }
+            let samples = new Float32Array(sampleLength);
+            let sampleIdx = 0;
+            for (let i = 0; i < audioData.length; i++) {
+                for (let j = 0; j < audioData[i].length; j++) {
+                    samples[sampleIdx] = audioData[i][j];
+                    sampleIdx++;
+                }
+            }
+            return samples;
+        };
+
+        let dataview = encodeWAV(mergeBuffers(audioData), audio_sample_rate);
+        let audioBlob = new Blob([dataview], { type: 'audio/wav' });
+        console.log(dataview);
+
+        return audioBlob;
+    };
+    
+    const aryMax = function (a, b) {return Math.max(a, b);}
+    const aryMin = function (a, b) {return Math.min(a, b);}
+
+    let recordFlag = false;
+    let endFlag = false;
+    let judgeFlag = false;
+
+    var onAudioProcess = function (e) {
+      var input = e.inputBuffer.getChannelData(0);
+      var bufferData = new Float32Array(bufferSize);
+      for (var i = 0; i < bufferSize; i++) {
+        bufferData[i] = input[i];
+      }
+      let max = bufferData.reduce(aryMax);
+      let min = bufferData.reduce(aryMin);
+
+      if ( max > 0.5 || min < -0.5 ) {
+        recordFlag = true;
+        endFlag = true;
+      }
+      if ( recordFlag ) {
+        audioData.push(bufferData);
+      }
+      if ( endFlag && max < 0.5 && min > -0.5 ) {
+        endFlag = false;
+        if ( !judgeFlag ) {
+          judgeFlag = true;
+          endRecord();
+        }
+      }
+    };
+
+    var endRecord = function () {
+      setTimeout(function () {
+        if ( !endFlag ) {
+          sendAudio();
+        }
+        judgeFlag = false;
+      }, 1500);
+    };
+
+    let handleSuccess = function (stream) {
+      audioContext = new AudioContext();
+      console.log(audio_sample_rate);
+      scriptProcessor = audioContext.createScriptProcessor(bufferSize, 1, 1);
+      var mediastreamsource = audioContext.createMediaStreamSource(stream);
+      mediastreamsource.connect(scriptProcessor);
+      scriptProcessor.onaudioprocess = onAudioProcess;
+      scriptProcessor.connect(audioContext.destination);
+
+      console.log('record start?');
+    };
+
+    navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+      .then(handleSuccess);
+}); 
+</script>
+</html>

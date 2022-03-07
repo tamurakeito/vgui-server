@@ -1,0 +1,10 @@
+{
+ "name": "socketDemo",
+ "version": "0.0.1",
+ "description": "socket.io app demo",
+ "dependencies": {
+  "cors": "^2.8.5",
+  "express": "^4.15.2",
+  "socket.io": "^4.4.1"
+ }
+}

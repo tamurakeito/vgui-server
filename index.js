@@ -9,7 +9,7 @@ var io = require('socket.io')(http, {
     }
 });
 const { exec } = require('child_process')
-var sh = "echo test_data/test.wav | adintool -in file -out adinnet -server localhost";
+var sh = "echo wave/num.wav | adintool -in file -out adinnet -server localhost";
 
 io.on('connection', function(socket){ 
   //ソケット接続時
@@ -19,7 +19,7 @@ io.on('connection', function(socket){
 
     var fs = require('fs');
     var writeFile = data.file;
-    var writePath = './test_data/test.wav'; 
+    var writePath = './wave/num.wav'; 
 
     var writeStream = fs.createWriteStream(writePath);
     writeStream.on('drain', function () {} )

@@ -53,16 +53,14 @@
 <script src="js/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.socket.io/3.1.3/socket.io.min.js" integrity="sha384-cPwlPLvBTa3sKAgddT6krw0cJat7egBga3DJepJyrLl4Q9/5WLra3rrnMcyTyOnh" crossorigin="anonymous"></script>
 <script> 
+//socket.io
+var socket = io('http://127.0.0.1:3001', {
+    withCredentials: false,
+});
+socket.on('command', function(msg){
+    $('#messages').append($('<li>').text(msg)); 
+});
 $(function () {
-    //socket.io
-    var socket = io('http://127.0.0.1:3001', {
-        withCredentials: false,
-    });
-    socket.on('command', function(msg){
-        $('#messages').append($('<li>').text(msg)); 
-    });
-
-
     //録音と送信
     let audio_sample_rate = 16000;
     let scriptProcessor = null;

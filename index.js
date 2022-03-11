@@ -10,12 +10,15 @@ var io = require('socket.io')(http, {
 });
 const { exec } = require('child_process')
 var sh = "echo wave/num.wav | adintool -in file -out adinnet -server localhost";
+var id = null;
 
 io.on('connection', function(socket){ 
   //ソケット接続時
   console.log('a user connected'); 
   //ブラウザ側からの音声の受け取り
   socket.on('upload', function(data) {
+    //socket.idをクライアント毎に取得
+    id = socket.id;
 
     var fs = require('fs');
     var writeFile = data.file;
@@ -47,7 +50,8 @@ io.on('connection', function(socket){
   socket.on('v-command', function(cmd) {
     console.log(`GetCommand:cmd=${cmd}`);
     //ブラウザへ返す
-    io.emit('command', cmd); 
+    //取得したIDと同じクライアントにのみ返す
+    io.to(id).emit('command', cmd); 
   });
 });
 

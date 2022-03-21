@@ -1,28 +1,40 @@
-#julius
 import socket
-import socketio
 import time
+# from socket import socket, AF_INET, SOCK_DGRAM
 
 HOST = '127.0.0.1'   # juliusサーバーのIPアドレス
 PORT = 10500         # juliusサーバーの待ち受けポート
 DATESIZE = 1024     # 受信データバイト数
 
-sio = socketio.Client()
+def Num(letter) -> int:
+    if letter == '一':
+        return 1
+    if letter == '二':
+        return 2
+    if letter == '三':
+        return 3
+    if letter == '四':
+        return 4
+    if letter == '五':
+        return 5
+    if letter == '六':
+        return 6
+    if letter == '七':
+        return 7
+    if letter == '八':
+        return 8
+    if letter == '九':
+        return 9
+    if letter == '十':
+        return 10
+    if letter == '百':
+        return 100
 
 class Julius:
 
     def __init__(self):
-
         # juliusとのソケット接続
         self.sock = None
-
-        sio.connect('http://127.0.0.1:3001/')
-        sio.wait()
-        '''
-        @sio.event
-        def connect():
-            print("I'm connected!")
-        '''
 
     def Num(letter) -> int:
         if letter == '一':
@@ -49,7 +61,6 @@ class Julius:
             return 100
 
     def run(self):
-
         # socket通信でjuliusサーバーに接続
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as self.sock:
             self.sock.connect((HOST, PORT))
@@ -76,70 +87,67 @@ class Julius:
 
                 # 話した言葉毎に、print文を実行
                 if fin_flag == True:
-                    '''
-                    if 'クリア' in strTemp:
-                        searchbox_input('')
-                    elif '検索' in strTemp:
-                        search_button_click()
-                    else:
-                        searchbox_input('東北大学')
-                    '''
+                    print(strTemp)
+                    # 出力は"[s]五十七[/s]"の形
+                    # 数字は+3
+                    # lenは+7
 
                     CMD = 0
-                    DIGIT = len(strTemp)
+                    DIGIT = len(strTemp) - 7
 
                     #文字数１
                     if DIGIT == 1:
-                        if strTemp[0] == '十':
+                        if strTemp[3] == '十':
                             CMD = 10
-                        elif strTemp[0] == '百':
+                        elif strTemp[3] == '百':
                             CMD = 100
                         else:
-                            CMD = Num(strTemp[0])
+                            CMD = Num(strTemp[3])
                     #文字数２
                     elif DIGIT == 2:
-                        if strTemp[0] == '十':
-                            CMD = 10 + Num(strTemp[1]) 
-                        elif strTemp[0] == '百':
-                            CMD = 100 + Num(strTemp[1])
-                        elif strTemp[1] == '十':
-                            CMD = 10*Num(strTemp[0]) 
-                        elif strTemp[1] == '百':
-                            CMD = 100*Num(strTemp[0])
+                        if strTemp[3] == '十':
+                            CMD = 10 + Num(strTemp[4])
+                        elif strTemp[3] == '百':
+                            CMD = 100 + Num(strTemp[4])
+                        elif strTemp[4] == '十':
+                            CMD = 10*Num(strTemp[3])
+                        elif strTemp[4] == '百':
+                            CMD = 100*Num(strTemp[3])
                     #文字数３
                     elif DIGIT == 3:
-                        if strTemp[0] == '百':
-                            if strTemp[1] == '十':
-                                CMD = 110 + Num(strTemp[2])
+                        if strTemp[3] == '百':
+                            if strTemp[4] == '十':
+                                CMD = 110 + Num(strTemp[5])
                             else:
-                                CMD = 100 + 10*Num(strTemp[1])
+                                CMD = 100 + 10*Num(strTemp[4])
                         else:
-                            if strTemp[1] == '十':
-                                CMD = 10*Num(strTemp[0]) + Num(strTemp[2])
-                            if strTemp[1] == '百':
-                                CMD = 100*Num(strTemp[0]) + Num(strTemp[2])      
+                            if strTemp[4] == '十':
+                                CMD = 10*Num(strTemp[3]) + Num(strTemp[5])
+                            if strTemp[4] == '百':
+                                CMD = 100*Num(strTemp[3]) + Num(strTemp[5])
                     #文字数４
                     elif DIGIT == 4:
-                        if strTemp[0] == '百':
-                            CMD = 100 + 10*Num(strTemp[1]) + Num(strTemp[3])
+                        if strTemp[3] == '百':
+                            CMD = 100 + 10*Num(strTemp[4]) + Num(strTemp[6])
                         else:
-                            if strTemp[2] == '十':
-                                CMD = 100*Num(strTemp[0]) + 10 + Num(strTemp[3])
+                            if strTemp[5] == '十':
+                                CMD = 100*Num(strTemp[3]) + 10 + Num(strTemp[6])
                             else:
-                                CMD = 100*Num(strTemp[0]) + 10*Num(strTemp[2])
+                                CMD = 100*Num(strTemp[3]) + 10*Num(strTemp[5])
                     #文字数５
                     elif DIGIT == 5:
-                        CMD = 100*Num(strTemp[0]) + 10*Num(strTemp[2]) + Num(strTemp[4])
-                    
-                    sio.emit('v-command', CMD)
+                        CMD = 100*Num(strTemp[3]) + 10*Num(strTemp[5]) + Num(strTemp[7])
+
+                    msg = str(CMD)
+                    # 送信
+                    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    s.sendto(msg.encode(), ("127.0.0.1", 5000))
+                    s.close()
 
                     fin_flag = False
                     strTemp = ""
                     CMD = 0
 
-
 if __name__ == "__main__":
-
     julius = Julius()
     julius.run()
-

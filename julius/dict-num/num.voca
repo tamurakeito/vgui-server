@@ -1,0 +1,38 @@
+% DEFAULT
+default	d e f o r u t o
+% VISUAL
+visual	b i j u a r u
+% ICHI
+一	i ch i
+% NI
+二	n i
+% SAN
+三	s a N
+% YON
+四	y o N
+% GO
+五	g o
+% ROKU
+六	r o k u
+% ROPP
+六	r o q
+% NANA
+七	n a n a
+% HACHI
+八	h a ch i
+% HAPP
+八	h a q
+% KYU
+九	ky u u
+% ZYU
+十	j u u
+% HYAKU
+百	hy a k u
+% BYAKU
+百	by a k u
+% PYAKU
+百	py a k u
+% NS_B
+[s]   silB
+% NS_E
+[/s]  silE

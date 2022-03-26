@@ -1,0 +1,202 @@
+@charset "UTF-8";
+
+/*common*/
+html {
+  font-size: 100%;
+}
+body {
+  /*font-family: 'M PLUS 1p', sans-serif;*/
+  font-family: "Helvetica Neue","Meiryo UI","Hiragino Sans",sans-serif;
+  line-height: 1.7;
+  color: #222;
+  margin: 0;
+  width: 100%;
+  background-color: #f2f2f2;
+}
+a {
+  text-decoration: none;
+}
+img {
+  width: 100%;
+}
+
+/*header*/
+header {
+  height: 40px;
+  display: flex;
+  justify-content: flex-end;
+}
+header a {
+  display: block;
+}
+header a.mail {
+  width: 26px;
+  margin: 7.5px 12px;
+}
+header a.facebook {
+  width: 25px;
+  margin: 7.5px 15px 0 0;
+}
+
+/*main*/
+main {
+  position: relative;
+  height: 300px;
+}
+main .container {
+  width: 100%;
+  position: absolute;
+  top: 60px;
+  left: 0px;
+}
+main .fancy {
+  border-radius: 30% 70% 65% 35% / 30% 28% 72% 70% ;
+  height: 180px;
+  width: 350px;
+  background: #fff;
+  margin: 0 auto;
+}
+main .fancy h1 {
+  font-size: 20px;
+  letter-spacing: 5px;
+  padding: 35px 0 10px 5px;
+}
+main .fancy p {
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding-left: 3px;
+}
+
+/*portfolio*/
+.portfolio {
+  background: #fafafa;
+  padding: 15px 0;
+}
+.portfolio h1 {
+  text-align: center;
+  padding-right: 25px;
+  font-size: 15px;
+  letter-spacing: 5px;
+  padding: 15px;
+  color: #333;
+}
+.portfolio section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding-bottom: 20px;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.portfolio section a.memo {
+  display: block;
+  width: 95%;
+  max-width: 500px;
+  background: #fff;
+  margin: 20px;
+  box-shadow: 0px 2px 35px rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+}
+.portfolio section a.memo .image-box {
+  background: #eee;
+}
+.portfolio section .memo h2 {
+  font-size: 15px;
+  letter-spacing: 0.2em;
+  font-weight: normal;
+  color: #333;
+  padding: 5px 15px;
+}
+.portfolio section .memo p {
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-weight: normal;
+  color: #333;
+  padding: 0px 15px;
+  margin-bottom: 25px;
+}
+
+/*other*/
+.other {
+  background: #fafafa;
+  padding: 5px;
+}
+.other h1 {
+  text-align: center;
+  padding-right: 25px;
+  font-size: 15px;
+  letter-spacing: 5px;
+  padding: 10px;
+  color: #333;
+}
+.other ul {
+  padding: 0.5em 1em 50px 1.5em;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.other ul li {
+  list-style-type: none;
+  line-height: 1.5;
+  padding: 0.7em 0;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+.other ul li::before {
+  position: relative;
+  top: -4px;
+  left: -10px;
+
+  display: inline-block;
+
+  width: 2px;
+  height: 2px;
+
+  content: '';
+
+  border-radius: 100%;
+  background: #000;
+}
+
+/*footer*/
+footer {
+  padding: 75px 0;
+}
+footer section {
+  display: flex;
+  justify-content: center;
+}
+footer section a {
+  display: block;
+}
+footer section a.mail {
+  width: 26px;
+  margin: 7.5px;
+}
+footer section a.facebook {
+  width: 25px;
+  margin: 7.5px;
+}
+footer p {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+/*vgui-app*/
+a {
+  transition: .2s;
+}
+/*vgui-commandタグのstyle設定*/
+vgui-command {
+  visibility: hidden;
+  position: absolute;
+  text-align: center;
+  top: 0;
+  left: 0;
+  font-size: xx-large;
+  font-weight: bold;
+  color: #000;
+}
+vgui-command.visual {
+  visibility: visible;
+}

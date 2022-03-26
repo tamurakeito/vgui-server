@@ -57,8 +57,8 @@ io.on('connection', function(socket){
     console.log(`GetCommand:cmd=${cmd}`);
     //ブラウザへ返す
     //取得したIDと同じクライアントにのみ返す
-    //io.to(id).emit('command', cmd); 
-    io.emit('command', cmd);
+    io.to(id).emit('command', cmd); 
+    //io.emit('command', cmd);
   });
 });
 

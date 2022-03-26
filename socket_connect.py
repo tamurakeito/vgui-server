@@ -19,7 +19,7 @@ s.bind((HOST, PORT))
 
 while True:
     msg, address = s.recvfrom(8192)
-    print(f"message: {msg}\nfrom: {address}")
+    print(f"command: {msg}\nfrom: {address}")
     sio.emit('v-command', msg.decode())
 
 s.close()

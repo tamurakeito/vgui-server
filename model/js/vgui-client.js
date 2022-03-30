@@ -1,3 +1,5 @@
+const address = 'http://54.249.45.137:3001'
+
 let audio_sample_rate = null;
 let scriptProcessor = null;
 let audioContext = null;
@@ -105,7 +107,7 @@ function chagePage(number) {
 }
 
 //socket.io
-var socket = io('http://127.0.0.1:3001', {
+var socket = io(address, {
     withCredentials: false,
 });
 socket.on('command', function(cmd){
